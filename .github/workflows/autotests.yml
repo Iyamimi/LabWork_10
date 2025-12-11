@@ -1,4 +1,4 @@
-name: .NET Regression Tests
+name: .NET Regression Tests with Coverage
 on:
   push:
     branches: ["master"]
