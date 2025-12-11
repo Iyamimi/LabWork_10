@@ -27,7 +27,21 @@ jobs:
       run: dotnet build --no-restore --configuration Release
       
     - name: Run tests and generate TRX log  # Запуск тестов
-      run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
+      run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage"
+      
+    - name: Generate code coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.25
+      with:
+        reports: '**/coverage.cobertura.xml'
+        targetdir: 'coverage-report'
+        reporttypes: 'HtmlInline;Badges;TextSummary'
+    
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage-report/
+        
     - name: Test Report		# Сохранение отчета
       uses: dorny/test-reporter@v2
       if: success() || failure() # запускает этот шаг в любом случае
