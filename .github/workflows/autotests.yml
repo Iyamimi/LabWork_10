@@ -25,7 +25,7 @@ jobs:
 
     - name: Build solution		# Построение решения
       run: dotnet build --no-restore --configuration Release
-	  - name: Run tests and generate TRX log  # Запуск тестов
+    - name: Run tests and generate TRX log  # Запуск тестов
       run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
     - name: Test Report		# Сохранение отчета
       uses: dorny/test-reporter@v2
