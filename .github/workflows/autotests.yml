@@ -1,51 +1,52 @@
 name: .NET Regression Tests
-on:		# Запускается при push и pull request файлов .cs в ветку master
+on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
     paths:
       - '**.cs'
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
     paths:
       - '**.cs'
+
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest # ОС виртуальной машины
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4 # Клонирование репозитория на ВМ
+      uses: actions/checkout@v4
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x' # Установка .NET 8 на ВМ
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore 		# Восстановление зависимостей
+      run: dotnet restore
 
-    - name: Build solution		# Построение решения
+    - name: Build solution
       run: dotnet build --no-restore --configuration Release
-      
-    - name: Run tests and generate TRX log  # Запуск тестов
+
+    - name: Run tests and generate TRX log
       run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage"
-      
+
     - name: Generate code coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.25
       with:
         reports: '**/coverage.cobertura.xml'
         targetdir: 'coverage-report'
         reporttypes: 'HtmlInline;Badges;TextSummary'
-    
+
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage-report/
-        
-    - name: Test Report		# Сохранение отчета
+
+    - name: Test Report
       uses: dorny/test-reporter@v2
-      if: success() || failure() # запускает этот шаг в любом случае
+      if: success() || failure()
       with:
-        name: Test results  
-        path: "**/*.trx"    # Путь сохранения результатов теста
-        reporter: dotnet-trx   # Формат результата
+        name: Test results
+        path: "**/*.trx"
+        reporter: dotnet-trx
